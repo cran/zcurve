@@ -1,0 +1,30 @@
+Package: zcurve
+Title: An Implementation of Z-Curves
+Version: 1.0.0
+Authors@R: c(
+    person("František", "Bartoš", email = "f.bartos96@gmail.com", role = c("aut", "cre")),
+    person("Ulrich", "Schimmack", email = "ulrich.schimmack@utoronto.ca", role = c("aut")))
+Maintainer: František Bartoš <f.bartos96@gmail.com>
+Description: An implementation of z-curves - a method for estimating expected discovery 
+    and replicability rates on the bases of test-statistics of published studies. The package 
+    provides functions for fitting the new density and EM version 
+    (Bartoš & Schimmack, 2020, <doi:10.31234/osf.io/urgtn>) as well as the original density 
+    z-curve (Brunner & Schimmack, 2017, <doi:10.31219/osf.io/wr93f>). Furthermore, the package 
+    provides summarizing and plotting functions for the fitted z-curve objects. See the 
+    aforementioned articles for more information about the z-curves, expected discovery 
+    and replicability rates, validation studies, and limitations.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
+Imports: Rcpp (>= 1.0.2), nleqslv, stats, evmix, graphics, Rdpack
+LinkingTo: Rcpp
+Suggests: spelling
+Language: en-US
+RdMacros: Rdpack
+NeedsCompilation: yes
+Packaged: 2020-03-31 14:18:19 UTC; Frantisek
+Author: František Bartoš [aut, cre],
+  Ulrich Schimmack [aut]
+Repository: CRAN
+Date/Publication: 2020-03-31 15:00:02 UTC
