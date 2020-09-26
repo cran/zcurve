@@ -21,8 +21,13 @@ validation studies, and limitations.
 
 ## Installation
 
-You can install the current version of zcurve from
-[GitHub](https://github.com/) with:
+You can install the current version of zcurve from CRAN with:
+
+``` r
+install.packages("zcurve")
+```
+
+or the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")

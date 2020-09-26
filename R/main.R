@@ -65,16 +65,20 @@
 zcurve       <- function(z, p, method = "EM", bootstrap = 1000, control = NULL){
   
   # check input
+  input_type <- NULL
   if(missing(z) & missing(p))stop("No data input")
   if(!missing(z)){
     if(!is.numeric(z))stop("Wrong z-scores input: Data are not nummeric.")
-    if(!is.vector(z))stop("Wrong z-scores input: Data are not a vector")    
+    if(!is.vector(z))stop("Wrong z-scores input: Data are not a vector")
+    if(max(z) < 1 )stop("It looks like you are entering p-values rather than Z-scores. To use p-values, explicitly name your argument 'zcurve(p = [vector of p-values])'")
+    input_type <- c(input_type, "z")
   }else{
     z <- NULL
   }
   if(!missing(p)){
     if(!is.numeric(p))stop("Wrong p-values input: Data are not nummeric.")
-    if(!is.vector(p))stop("Wrong p-values input: Data are not a vector")    
+    if(!is.vector(p))stop("Wrong p-values input: Data are not a vector") 
+    input_type <- c(input_type, "p")
   }else{
     p <- NULL
   }
@@ -85,9 +89,10 @@ zcurve       <- function(z, p, method = "EM", bootstrap = 1000, control = NULL){
   
   
   # create results object
-  object        <- NULL
-  object$call   <- match.call()
-  object$method <- method
+  object            <- NULL
+  object$call       <- match.call()
+  object$method     <- method
+  object$input_type <- input_type
   
   
   # update control
@@ -226,12 +231,20 @@ summary.zcurve       <- function(object, type = "results", all = FALSE, ERR.adj 
     iter_text <- object$fit$iter
   }
   
+  temp_N_sig     <- sum(object$data > object$control$a)
+  temp_N_obs     <- length(object$data)
+  temp_N_used    <- sum(object$data > object$control$a & object$data < object$control$b)
+    
   model <- list(
     "method"    = method_text,
     "model"     = ifelse(is.null(object$control$model), "custom", object$control$model),
     "fit_index" = fit_index,
     "fit_stat"  = fit_stat,
-    "iter"      = iter_text
+    "iter"      = iter_text,
+    "input_type"= object$input_type,
+    "N_all"     = temp_N_obs,
+    "N_sig"     = temp_N_sig,
+    "N_used"    = temp_N_used
   )
   
   if(type == "results" | substr(type,1,3) == "res"){
@@ -263,8 +276,6 @@ summary.zcurve       <- function(object, type = "results", all = FALSE, ERR.adj 
     if(all){
       
       temp_sig_level <- object$control$sig_level
-      temp_N_sig     <- sum(object$data > object$control$a)
-      temp_N_obs     <- length(object$data)
       
       if(!is.null(object$boot)){
         TAB <- rbind(TAB,
@@ -384,7 +395,8 @@ print.summary.zcurve <- function(x, ...){
     cat(paste(c("\033[0;31m", "Model did not converge in ", x$model$iter, " iterations", "\033[0m", "\n"), collapse = ""))
   }
   
-  
+  obs_proportion <- stats::prop.test(x$model$N_sig, x$model$N_all)
+  cat(paste0("Fitted using ", x$model$N_used, " ", paste(x$model$input_type, collapse = " and "), "-values. ", x$model$N_all, " supplied, ", x$model$N_sig, " significant (ODR = ",  .r2d(obs_proportion$estimate), ", 95% CI [", .r2d(obs_proportion$conf.int[1]), ", ", .r2d(obs_proportion$conf.int[2]), "]).\n"))
 
   cat(paste(c(x$model$fit_stat," = " , .r2d(x$model$fit_index[1]), fit_index_CI, "\n"), collapse = ""))
   
@@ -466,16 +478,20 @@ plot.zcurve          <- function(x, annotation = FALSE, CI = FALSE, extrapolate 
   br2[length(br2)] <- x$control$a
   
   # get histograms
-  h1 <- graphics::hist(x$data[x$data > x$control$a & x$data < x$control$b], breaks = br1, plot = F)
-  h2 <- graphics::hist(x$data[x$data < x$control$a], breaks = br2, plot = F)
-  # scale the density of nonsignificant z-scores appropriately to the first one
-  h2$density <- h2$density * (x$control$a/(x$control$b - x$control$a))
-  h2$density <- h2$density/(
-    (length(x$data[x$data > x$control$a & x$data < x$control$b])/(x$control$b - x$control$a))
-    /
-      (length(x$data[x$data < x$control$a])/(x$control$a))
-  )
-  
+  h1 <- graphics::hist(x$data[x$data > x$control$a & x$data < x$control$b], breaks = br1, plot = F) 
+  if(length(x$data[x$data < x$control$a])){
+    h2 <- graphics::hist(x$data[x$data < x$control$a], breaks = br2, plot = F)
+    # scale the density of nonsignificant z-scores appropriately to the first one
+    h2$density <- h2$density * (x$control$a/(x$control$b - x$control$a))
+    h2$density <- h2$density/(
+      (length(x$data[x$data > x$control$a & x$data < x$control$b])/(x$control$b - x$control$a))
+      /
+        (length(x$data[x$data < x$control$a])/(x$control$a))
+    )    
+  }else{
+    h2 <- NULL
+  }
+
   # compute fitted z-curve density
   x_seq <- seq(0, x$control$b, .01)
   y_den <- sapply(1:length(x$fit$mu), function(i){
@@ -499,18 +515,18 @@ plot.zcurve          <- function(x, annotation = FALSE, CI = FALSE, extrapolate 
   x.anno <- x_max*x.anno
   
   if(extrapolate){
-    y_max  <- max(y_den, h1$density, h2$density)
+    y_max  <- max(c(y_den, h1$density, h2$density))
   }else{
-    y_max <-  max(h1$density, h2$density)
+    y_max <-  max(c(h1$density, h2$density))
   }
   
   # adjusting the height of the chart so the text is higher than the highest ploted thing in the x-range of the text
   if(annotation & CI){
-    y_max <- ifelse(max(y_den_u.CI[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]]) > y_max*(y.anno[length(y.anno)] - .025),
-                    max(y_den_u.CI[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]])/(y.anno[length(y.anno)] - .025), y_max)
+    y_max <- ifelse(max(c(y_den_u.CI[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]])) > y_max*(y.anno[length(y.anno)] - .025),
+                    max(c(y_den_u.CI[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]]))/(y.anno[length(y.anno)] - .025), y_max)
   }else if(annotation & !CI){
-    y_max <- ifelse(max(y_den[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]]) > y_max*(y.anno[length(y.anno)] - .025),
-                    max(y_den[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]])/(y.anno[length(y.anno)] - .025), y_max)
+    y_max <- ifelse(max(c(y_den[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]])) > y_max*(y.anno[length(y.anno)] - .025),
+                    max(c(y_den[x.anno < x_seq], h1$density[x.anno < h1$breaks[-length(h1$density)]]))/(y.anno[length(y.anno)] - .025), y_max)
   }
   
   
@@ -526,12 +542,14 @@ plot.zcurve          <- function(x, annotation = FALSE, CI = FALSE, extrapolate 
                  cex.axis = cex.axis,
                  lwd = 1, las = 1)
   # and un-used z-scores
-  graphics::par(new=TRUE)
-  graphics::plot(h2,
-                 freq = FALSE, density = 0, angle = 0, border ="grey30",
-                 xlim = c(0, x_max),
-                 ylim = c(0, y_max),
-                 axes = FALSE, ann = FALSE, lwd = 1, las = 1)
+  if(!is.null(h2)){
+    graphics::par(new=TRUE)
+    graphics::plot(h2,
+                   freq = FALSE, density = 0, angle = 0, border ="grey30",
+                   xlim = c(0, x_max),
+                   ylim = c(0, y_max),
+                   axes = FALSE, ann = FALSE, lwd = 1, las = 1)  
+  }
   # add the density estimate if the model was estimated by density
   if(x$method == "density"){
     graphics::lines(x$fit$density$x, x$fit$density$y, lty = 1, col = "grey60", lwd = 4)
