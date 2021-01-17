@@ -1,13 +1,13 @@
-7d35cba1b8fe327273c8dd22b904b958 *DESCRIPTION
+7c476699f9dff2fbe829902fb2406c57 *DESCRIPTION
 90f7f0b4c1c17d2425c4f19657eba318 *NAMESPACE
 902269a2ed8db76de8fdd02fb3ddb563 *R/RcppExports.R
-8180c08612bbc69e3eeefac972bc479f *R/main.R
+e31d7e2377bcdc2acb5b5dd885e13192 *R/main.R
 ec63ae38faac968fba800d7d8ced5703 *R/tools.R
 3dc09710fc26fa594c5a8fa8bca87287 *R/zcurve-package.R
 83144075754d0f239f9345a305355ec9 *R/zcurve_EM.R
 dd3d1494d404b6e5b258a7493b4049fc *R/zcurve_density.R
 c515d13b34f0936c8ca8805a65668274 *README.md
-40374d1fed7fbf1ee8ee661940b839dd *build/partial.rdb
+fa0bdb1be8178903f0aacc739156433d *build/partial.rdb
 27c12b638c3de91cabf10496c1802c01 *data/OSC.z.RData
 1c463e150a0b2920d6074733118d6fb9 *inst/CITATION
 38a8c2a8b9f7433c1fe5de935690c6c3 *inst/REFERENCES.bib
@@ -32,4 +32,3 @@ c7eae883dfbcbd9e35edd0196cd498d5 *man/zcurve-package.Rd
 48c7d96812bd25cab09e93dd71284589 *man/zcurve.estimates.Rd
 c30a4b069b5a5b7b2e592fd38a674977 *src/RcppExports.cpp
 3979df665db184e932aa8b736064289b *src/zcurveEM.cpp
-332173f20d20942c02019350ea4dcadc *tests/spelling.R

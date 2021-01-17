@@ -1,6 +1,6 @@
 Package: zcurve
 Title: An Implementation of Z-Curves
-Version: 1.0.7
+Version: 1.0.8
 Authors@R: c(
     person("František", "Bartoš", email = "f.bartos96@gmail.com", role = c("aut", "cre")),
     person("Ulrich", "Schimmack", email = "ulrich.schimmack@utoronto.ca", role = c("aut")))
@@ -23,8 +23,8 @@ Suggests: spelling
 Language: en-US
 RdMacros: Rdpack
 NeedsCompilation: yes
-Packaged: 2020-12-15 20:02:46 UTC; fbart
+Packaged: 2021-01-17 19:43:28 UTC; fbart
 Author: František Bartoš [aut, cre],
   Ulrich Schimmack [aut]
 Repository: CRAN
-Date/Publication: 2020-12-15 20:30:02 UTC
+Date/Publication: 2021-01-17 20:30:02 UTC
