@@ -1,6 +1,6 @@
 Package: zcurve
 Title: An Implementation of Z-Curves
-Version: 2.1.2
+Version: 2.2.0
 Authors@R: c(
     person("František", "Bartoš", email = "f.bartos96@gmail.com", role = c("aut", "cre")),
     person("Ulrich", "Schimmack", email = "ulrich.schimmack@utoronto.ca", role = c("aut")))
@@ -16,7 +16,7 @@ Description: An implementation of z-curves - a method for estimating expected di
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Imports: Rcpp (>= 1.0.2), nleqslv, stats, evmix, graphics, Rdpack
 LinkingTo: Rcpp
 Suggests: spelling, testthat, vdiffr
@@ -24,8 +24,8 @@ Language: en-US
 RdMacros: Rdpack
 URL: https://fbartos.github.io/zcurve/
 NeedsCompilation: yes
-Packaged: 2022-02-07 20:31:47 UTC; fbart
+Packaged: 2022-11-29 21:14:28 UTC; fbart
 Author: František Bartoš [aut, cre],
   Ulrich Schimmack [aut]
 Repository: CRAN
-Date/Publication: 2022-02-07 21:00:02 UTC
+Date/Publication: 2022-11-29 22:10:02 UTC
