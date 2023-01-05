@@ -76,9 +76,15 @@ zcurve_data <- function(data, id = NULL, rounded = TRUE, stat_precise = 2, p_pre
   stat_type <- substr(data, 1, 1)
   stat_val  <- substr(data, regexpr("[=]|[<]|[>]", data) + 1, nchar(data))
   stat_df1  <- ifelse(stat_type %in% c("t", "f", "c"), substr(data, regexpr("\\(", data) + 1, regexpr("[,]|[\\)]", data) - 1), NA)
-  stat_df2  <- ifelse(stat_type == "f",           substr(data, regexpr(",", data) + 1, regexpr("[\\)]", data) - 1), NA)
+  stat_df2  <- ifelse(stat_type == "f", substr(data, regexpr(",", data) + 1, regexpr("[\\)]", data) - 1), NA)
   censored  <- grepl("<", data) | grepl(">", data)
-  digits    <- ifelse(regexpr("\\.", data) == -1, 0, nchar(data) - regexpr("\\.", data))
+  digits    <- sapply(as.numeric(stat_val), function(x) {
+    if (abs(x - round(x)) > .Machine$double.eps^0.5) {
+      nchar(format(x, scientific = FALSE)) - 2
+    } else {
+      return(0)
+    }
+  })
   
   # check the input
   if(any(!stat_type %in% c("t", "z", "p", "f", "c")))
