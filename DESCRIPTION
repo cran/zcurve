@@ -1,6 +1,6 @@
 Package: zcurve
 Title: An Implementation of Z-Curves
-Version: 2.4.0
+Version: 2.4.1
 Authors@R: c(
     person("František", "Bartoš", email = "f.bartos96@gmail.com", role = c("aut", "cre")),
     person("Ulrich", "Schimmack", email = "ulrich.schimmack@utoronto.ca", role = c("aut")))
@@ -24,9 +24,10 @@ Suggests: parallel, spelling, testthat, vdiffr
 Language: en-US
 RdMacros: Rdpack
 URL: https://fbartos.github.io/zcurve/
+BugReports: https://github.com/FBartos/zcurve/issues
 NeedsCompilation: yes
-Packaged: 2023-10-27 09:05:28 UTC; fbart
+Packaged: 2024-05-23 11:39:37 UTC; fbart
 Author: František Bartoš [aut, cre],
   Ulrich Schimmack [aut]
 Repository: CRAN
-Date/Publication: 2023-10-27 22:40:03 UTC
+Date/Publication: 2024-05-23 12:10:02 UTC

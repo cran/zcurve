@@ -37,12 +37,12 @@ to be censored as well as test statistics reported with low accuracy
 }
 \details{
 By default, the function extract the type of test statistic:
-\enumerate{
-\item \code{"F(df1, df2)=x"} for F-statistic with df1 and df2 degrees of freedom,
-\item \code{"chi(df)=x"} for chi-square statistic with df degrees of freedom,
-\item \code{"t(df)=x"} for t-statistic with df degrees of freedom,
-\item \code{"z=x"} for z-statistic,
-\item \code{"p=x"} for p-value.
+\describe{
+\item{\code{"F(df1, df2)=x"}}{F-statistic with df1 and df2 degrees of freedom,}
+\item{\code{"chi(df)=x"}}{Chi-square statistic with df degrees of freedom,}
+\item{\code{"t(df)=x"}}{for t-statistic with df degrees of freedom,}
+\item{\code{"z=x"}}{for z-statistic,}
+\item{\code{"p=x"}}{for p-value.}
 }
 The input is not case sensitive and automatically removes empty spaces. Furthermore,
 inequalities (\code{"<"} and \code{">"}) can be used to denote censoring. I.e., that
