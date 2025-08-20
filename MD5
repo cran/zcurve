@@ -1,4 +1,4 @@
-919a9ae66584543375ee1695bc289f20 *DESCRIPTION
+f44a6fa23ef73055256e84e084feded0 *DESCRIPTION
 673d928875c8b403cad6083b6f4f3e94 *NAMESPACE
 f8f6f6f80450220607e390e55e37c64e *R/RcppExports.R
 a4f285d69a47af51e05910302cae98c0 *R/data-preparation.R
@@ -8,10 +8,10 @@ d940dbde2784d6078f8f5a1617fd675e *R/utilities.R
 a2a337967ef15f37147f095b04b5b808 *R/zcurve-package.R
 c72a0916836864ea1a49034efc8a84a4 *R/zcurve_EM.R
 d9b1219ef5738be499f28969e0443436 *R/zcurve_clustered.R
-4ba61f9cc3f080d91ea7645750d53a81 *R/zcurve_density.R
+30e51d41e834c8594627c362e4272df9 *R/zcurve_density.R
 646971bf4f36f3358b122dce891b11e4 *R/zzz.R
 334b1c226e60983ddc81a7b2c9051388 *README.md
-f90c4f10c56adbc45c0f5180583f5a77 *build/partial.rdb
+b62fb5ca1363f8d706a0dcab6f059cff *build/partial.rdb
 27c12b638c3de91cabf10496c1802c01 *data/OSC.z.RData
 1c463e150a0b2920d6074733118d6fb9 *inst/CITATION
 a7ba296878f28ce8aadce0c307928abd *inst/REFERENCES.bib
@@ -40,7 +40,7 @@ a4c7ce2c67f0e4d05292d13ad16097af *man/zcurve-package.Rd
 8a1d367eabc04b6947da58f6f9983c51 *man/zcurve_data.Rd
 fb9c9337807d02c84700807c490c5d63 *man/zcurve_options.Rd
 5e8ac6826f3323eb16b7f5b9add067ee *src/RcppExports.cpp
-57eaa7695ca80c08eb5f546a7dfbe1e3 *src/zcurveEM.cpp
+e73a376d96ded54d2b20817cbfd3a682 *src/zcurveEM.cpp
 3d964c058c98f16c5acf38df481fafc2 *tests/testthat.R
 c523ef2414956e508edf8b0bae2239fe *tests/testthat/_snaps/zcurve/z-curve-cens-em-ggplot.svg
 b90fd2500d608c1c366616f8fb67b441 *tests/testthat/_snaps/zcurve/z-curve-cens-em.svg
@@ -49,10 +49,10 @@ b90fd2500d608c1c366616f8fb67b441 *tests/testthat/_snaps/zcurve/z-curve-cens-em.s
 02e193d09476495c18905aa1065ff84a *tests/testthat/_snaps/zcurve/z-curve-clustered-mixed.svg
 b627f317d8691b4f457a558c31a1bb4f *tests/testthat/_snaps/zcurve/z-curve-clustered-precise.svg
 e3561f95c4fcfdcfc5bcbdb5180db10d *tests/testthat/_snaps/zcurve/z-curve-clustered-rounded.svg
-06beddd673331cd623be10caf1e57138 *tests/testthat/_snaps/zcurve/z-curve-em-ggplot.svg
-fbdba82b997a9cc130a04697a6d1471a *tests/testthat/_snaps/zcurve/z-curve-em.svg
+d8cd6c37cabf3f0472bce9d0aae0181c *tests/testthat/_snaps/zcurve/z-curve-em-ggplot.svg
+d81fff854217923064c79e627fd46b0d *tests/testthat/_snaps/zcurve/z-curve-em.svg
 9ce666ac09379e0d43fc8d5c7a9d5b1c *tests/testthat/_snaps/zcurve/z-curve-kd2-ggplot.svg
 bd6bbf11a6060e4be5cb6fe66eeaa54a *tests/testthat/_snaps/zcurve/z-curve-kd2.svg
 62db8422c9ef64ffd0dac8b69dd9057f *tests/testthat/_snaps/zcurve/z-curve-mixed-em-ggplot.svg
 70761fcf0d961b9fbdad460b6da2bba1 *tests/testthat/_snaps/zcurve/z-curve-mixed-em.svg
-ec5daff92bc18d4400a714d06ed1dbbb *tests/testthat/test-zcurve.R
+0c4d07f60426302ed56ad7b6d6e0bc2b *tests/testthat/test-zcurve.R
