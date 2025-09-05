@@ -17,7 +17,7 @@ test_that("z-curve EM can be fitted and reproduces OSC results", {
       ""                    , 
       "Estimates:"          , 
       "      ERR       EDR ",
-      "0.6180663 0.3905984 "    
+      "0.6180361 0.3905984 "    
     ))
   
   # basic summary
@@ -81,7 +81,7 @@ test_that("z-curve KD2 can be fitted and reproduces OSC results", {
       ""                                                       ,
       "Estimates:"                                             ,
       "      ERR       EDR "                                   ,
-      "0.6133975 0.5064694 "    
+      "0.6132671 0.5064694 "    
     ))
   
   # basic summary
@@ -93,7 +93,7 @@ test_that("z-curve KD2 can be fitted and reproduces OSC results", {
       "model: KD2 via density"                                                                  ,
       ""                                                                                        ,
       "    Estimate  l.CI  u.CI"                                                                ,
-      "ERR    0.613 0.496 0.745"                                                                ,
+      "ERR    0.613 0.495 0.745"                                                                ,
       "EDR    0.506 0.141 0.714"                                                                ,
       ""                                                                                        ,
       "Model converged in 46 iterations"                                                        ,

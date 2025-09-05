@@ -1,9 +1,9 @@
-f44a6fa23ef73055256e84e084feded0 *DESCRIPTION
+f4f466772095a87a370fbac9a75538de *DESCRIPTION
 673d928875c8b403cad6083b6f4f3e94 *NAMESPACE
 f8f6f6f80450220607e390e55e37c64e *R/RcppExports.R
 a4f285d69a47af51e05910302cae98c0 *R/data-preparation.R
 eeb1b24b1c75b129e2bb87b214ef6787 *R/main.R
-5255bacc33209177fde814ac6df0c890 *R/tools.R
+6f861f8fc4658c487444c22dfb0bead5 *R/tools.R
 d940dbde2784d6078f8f5a1617fd675e *R/utilities.R
 a2a337967ef15f37147f095b04b5b808 *R/zcurve-package.R
 c72a0916836864ea1a49034efc8a84a4 *R/zcurve_EM.R
@@ -11,7 +11,7 @@ d9b1219ef5738be499f28969e0443436 *R/zcurve_clustered.R
 30e51d41e834c8594627c362e4272df9 *R/zcurve_density.R
 646971bf4f36f3358b122dce891b11e4 *R/zzz.R
 334b1c226e60983ddc81a7b2c9051388 *README.md
-b62fb5ca1363f8d706a0dcab6f059cff *build/partial.rdb
+91b00aaca6a548983215c58b60445a71 *build/partial.rdb
 27c12b638c3de91cabf10496c1802c01 *data/OSC.z.RData
 1c463e150a0b2920d6074733118d6fb9 *inst/CITATION
 a7ba296878f28ce8aadce0c307928abd *inst/REFERENCES.bib
@@ -55,4 +55,4 @@ d81fff854217923064c79e627fd46b0d *tests/testthat/_snaps/zcurve/z-curve-em.svg
 bd6bbf11a6060e4be5cb6fe66eeaa54a *tests/testthat/_snaps/zcurve/z-curve-kd2.svg
 62db8422c9ef64ffd0dac8b69dd9057f *tests/testthat/_snaps/zcurve/z-curve-mixed-em-ggplot.svg
 70761fcf0d961b9fbdad460b6da2bba1 *tests/testthat/_snaps/zcurve/z-curve-mixed-em.svg
-0c4d07f60426302ed56ad7b6d6e0bc2b *tests/testthat/test-zcurve.R
+46b47fe756f7137a3accc6019b30be65 *tests/testthat/test-zcurve.R

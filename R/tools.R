@@ -76,7 +76,9 @@ power_to_z  <- function(power, alpha = .05, a = stats::qnorm(alpha/2,lower.tail 
   # 1/sum(weights / power) # old formula based on estimated weights
 }
 .get_ERR    <- function(power2, power1, pop_weights){
-  sum(pop_weights * power2 * power1) / sum(pop_weights * power2)
+  # power_n is probability passing opposite criterion
+  power_n <- power2 - power1
+  sum(pop_weights * (power_n^2 + power1^2)) / sum(pop_weights * power2)
   # sum(weights * power)  # old formula based on estimated weights
 }
 
