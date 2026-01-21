@@ -536,7 +536,8 @@ List zcurve_EM_start_RCpp(NumericVector x, int type, int K,
 List zcurve_EM_boot_RCpp(NumericVector x, int type,
                   NumericVector mu, NumericVector sigma, NumericVector theta,
                   double a, double b, double sig_level,
-                  int bootstrap, int max_iter, double criterion){
+                  int bootstrap, double prop_boot, int max_iter, double criterion){
+
   
   NumericMatrix mu_reps       (bootstrap, mu.size());
   NumericMatrix weights_reps  (bootstrap, mu.size());
@@ -551,9 +552,12 @@ List zcurve_EM_boot_RCpp(NumericVector x, int type,
   int new_iter;
   double new_Q;
   double new_prop_high;
+  
+  // M-out-of-N bootstrap
+  int m_size = std::round(x.size() * prop_boot);
 
   for(int i = 0; i < bootstrap; i++){
-    temp_x = sample(x, x.size(), true);
+    temp_x = sample(x, m_size, true);
 
     List temp_fit = zcurve_EM_fit_RCpp(temp_x, type, mu, sigma, theta, a, b, sig_level,
                                 max_iter, criterion);
@@ -637,7 +641,7 @@ List zcurve_EM_start_fast_RCpp(NumericVector x, int K,
 List zcurve_EM_boot_fast_RCpp(NumericVector x,
                   NumericVector mu, NumericVector sigma, NumericVector theta,
                   double a, double b, double sig_level,
-                  int bootstrap, int max_iter, double criterion){
+                  int bootstrap, double prop_boot, int max_iter, double criterion){
   NumericMatrix mu_reps        (bootstrap, mu.size());
   NumericMatrix weights_reps   (bootstrap, mu.size());
   IntegerVector iter_reps      (bootstrap);
@@ -652,8 +656,11 @@ List zcurve_EM_boot_fast_RCpp(NumericVector x,
   double new_Q;
   double new_prop_high;
 
+  // M-out-of-N bootstrap
+  int m_size = std::round(x.size() * prop_boot);
+
   for(int i = 0; i < bootstrap; i++){
-    temp_x = sample(x, x.size(), true);
+    temp_x = sample(x, m_size, true);
 
     List temp_fit = zcurve_EM_fit_fast_RCpp(temp_x, mu, sigma, theta, a, b, sig_level,
                                 max_iter, criterion);
@@ -737,7 +744,7 @@ List zcurve_EMc_start_fast_RCpp(NumericVector x,  NumericVector lb, NumericVecto
 List zcurve_EMc_boot_fast_RCpp(NumericVector x, NumericVector lb, NumericVector ub, IntegerVector indx,
                               NumericVector mu, NumericVector sigma, NumericVector theta,
                               double a, double b, double sig_level,
-                              int bootstrap, int max_iter, double criterion){
+                              int bootstrap, double prop_boot, int max_iter, double criterion){
   NumericMatrix mu_reps        (bootstrap, mu.size());
   NumericMatrix weights_reps   (bootstrap, mu.size());
   IntegerVector iter_reps      (bootstrap);
@@ -759,9 +766,12 @@ List zcurve_EMc_boot_fast_RCpp(NumericVector x, NumericVector lb, NumericVector 
   double new_Q;
   double new_prop_high;
   
+  // M-out-of-N bootstrap
+  int m_size = std::round((x.size() + lb.size()) * prop_boot);
+  
   for(int i = 0; i < bootstrap; i++){
     
-    temp_indx   = sample(indx, x.size() + lb.size(), true);
+    temp_indx   = sample(indx, m_size, true);
     
     is_temp_indx_x = temp_indx > 0;
     is_temp_indx_b = temp_indx < 0;
@@ -803,7 +813,7 @@ List zcurve_EMc_boot_fast_RCpp(NumericVector x, NumericVector lb, NumericVector 
 List zcurve_EMc_boot_fast_w_RCpp(NumericVector x, NumericVector x_w, NumericVector lb, NumericVector ub, NumericVector b_w, IntegerVector indx,
                                  NumericVector mu, NumericVector sigma, NumericVector theta,
                                  double a, double b, double sig_level,
-                                 int bootstrap, int max_iter, double criterion){
+                                 int bootstrap, double prop_boot, int max_iter, double criterion){
   NumericMatrix mu_reps        (bootstrap, mu.size());
   NumericMatrix weights_reps   (bootstrap, mu.size());
   IntegerVector iter_reps      (bootstrap);
@@ -827,9 +837,12 @@ List zcurve_EMc_boot_fast_w_RCpp(NumericVector x, NumericVector x_w, NumericVect
   double new_Q;
   double new_prop_high;
   
+  // M-out-of-N bootstrap
+  int m_size = std::round((x.size() + lb.size()) * prop_boot);
+  
   for(int i = 0; i < bootstrap; i++){
     
-    temp_indx   = sample(indx, x.size() + lb.size(), true);
+    temp_indx   = sample(indx, m_size, true);
     
     is_temp_indx_x = temp_indx > 0;
     is_temp_indx_b = temp_indx < 0;

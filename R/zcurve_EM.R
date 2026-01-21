@@ -109,6 +109,7 @@
                                      b         = control$b,
                                      sig_level = control$sig_level,
                                      bootstrap = bootstrap,
+                                     prop_boot = control$bootstrap_prop,
                                      max_iter  = control$max_iter_boot,
                                      criterion = control$criterion_boot
                                      )
@@ -122,6 +123,7 @@
                                      b         = control$b,
                                      sig_level = control$sig_level,
                                      bootstrap = bootstrap,
+                                     prop_boot = control$bootstrap_prop,
                                      criterion = control$criterion_boot,
                                      max_iter  = control$max_iter_boot)
   }else if(control$type == 3){
@@ -143,6 +145,7 @@
                                            b         = control$b,
                                            sig_level = control$sig_level,
                                            bootstrap = bootstrap,
+                                           prop_boot = control$bootstrap_prop,
                                            criterion = control$criterion_boot,
                                            max_iter  = control$max_iter_boot)
   }
@@ -221,6 +224,8 @@
 #' starting phase of EM algorithm, defaults to \code{100}
 #' @param max_iter_boot A maximum number of iterations for the 
 #' booting phase of EM algorithm, defaults to \code{100}
+#' @param bootstrap_prop A proportion of the sample size to be used for the
+#' bootstrapping, defaults to \code{1.0} (i.e., N-out-of-N bootstrap)
 #' @param fit_reps A number of starting fits to get the initial
 #' position for the EM algorithm, defaults to \code{100}
 #' 
@@ -278,6 +283,7 @@ NULL
     control$max_iter_start  <- 100
     control$fit_reps        <- 100
     control$model           <- "EM"
+    control$bootstrap_prop  <- 1
     return(control)
   }
   if(!is.null(control[["model"]])){
@@ -300,6 +306,7 @@ NULL
       control$max_iter_start  <- 100
       control$fit_reps        <- 100
       control$model           <- "EM"
+      control$bootstrap_prop  <- 1
       return(control)
     }
   }
@@ -356,6 +363,9 @@ NULL
   }
   if(is.null(control[["model"]])){
     control$model           <- NULL
+  }
+  if (is.null(control[["bootstrap_prop"]])) {
+    control$bootstrap_prop  <- 1
   }
   return(control)
 }

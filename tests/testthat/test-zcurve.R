@@ -7,7 +7,7 @@ test_that("z-curve EM can be fitted and reproduces OSC results", {
   set.seed(666)
   
   # fit the EM method
-  fit.EM  <- zcurve(OSC.z)
+  fit.EM  <- suppressWarnings(zcurve(OSC.z))
 
   # print
   expect_equal(
@@ -71,7 +71,7 @@ test_that("z-curve KD2 can be fitted and reproduces OSC results", {
   skip_on_os("mac")
   
   # fit the EM method
-  fit.KD2 <- zcurve(OSC.z, method = "density", bootstrap = 10)
+  fit.KD2 <- suppressWarnings(zcurve(OSC.z, method = "density", bootstrap = 10))
   
   # print
   expect_equal(
@@ -114,7 +114,7 @@ test_that("z-curve EM censoring works", {
   z.ub <- z.lb + runif(100, 0, 1)
   
   # mixed censored / normal fit
-  fit.mixed  <- zcurve(z = z, z.lb = z.lb, z.ub = z.ub)
+  fit.mixed  <- suppressWarnings(zcurve(z = z, z.lb = z.lb, z.ub = z.ub))
   
   # summary
   expect_equal(
@@ -139,7 +139,7 @@ test_that("z-curve EM censoring works", {
   
   
   # censoring only
-  fit.cens  <- zcurve(z.lb = z.lb, z.ub = z.ub)
+  fit.cens  <- suppressWarnings(zcurve(z.lb = z.lb, z.ub = z.ub))
   
   # summary
   expect_equal(

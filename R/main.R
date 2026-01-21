@@ -261,6 +261,13 @@ zcurve       <- function(z, z.lb, z.ub, p, p.lb, p.ub, data, method = "EM", boot
   }
   object$fit <- fit
   
+  if (object$N_sig < 300) {
+    warning("The z-curve method is meant for large samples of test statistics. It might produce undercoverage and biased estimates of EDR in small sample sizes.", call. = FALSE, immediate. = TRUE)
+  }
+  if (method == "EM" && any(fit$weights > .90)) {
+    warning("The z-curve method placed > 90% of weight into a single component. The high weight concentration might be indicative of unreliable EDR estimates (e.g., the model is unable to estimate components of low power).", call. = FALSE, immediate. = TRUE)
+  }
+
   
   # check convergence
   if(method == "EM"){

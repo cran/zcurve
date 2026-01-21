@@ -46,6 +46,9 @@ starting phase of EM algorithm, defaults to \code{100}}
 \item{max_iter_boot}{A maximum number of iterations for the
 booting phase of EM algorithm, defaults to \code{100}}
 
+\item{bootstrap_prop}{A proportion of the sample size to be used for the
+bootstrapping, defaults to \code{1.0} (i.e., N-out-of-N bootstrap)}
+
 \item{fit_reps}{A number of starting fits to get the initial
 position for the EM algorithm, defaults to \code{100}}
 }

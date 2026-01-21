@@ -373,6 +373,7 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
                                            b         = control$b,
                                            sig_level = control$sig_level,
                                            bootstrap = bootstrap,
+                                           prop_boot = control$bootstrap_prop,
                                            criterion = control$criterion_boot,
                                            max_iter  = control$max_iter_boot)
   return(
