@@ -23,5 +23,10 @@ Authors:
   \item Ulrich Schimmack \email{ulrich.schimmack@utoronto.ca}
 }
 
+Other contributors:
+\itemize{
+  \item Shaheed Azaad [contributor]
+}
+
 }
 \keyword{internal}

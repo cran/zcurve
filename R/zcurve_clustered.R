@@ -6,11 +6,19 @@
 #' Two different methods that account for clustering ar implemented via 
 #' the EM model: \code{"w"} for down weighting the likelihood of the test 
 #' statistics proportionately to the number of repetitions in the clusters, 
-#' and \code{"b"} for a nested bootstrap where only a single study from each 
-#' bootstrap is selected for model fitting.
+#' and \code{"b"} for a cluster bootstrap where clusters are resampled with 
+#' replacement (keeping all of their test statistics) to estimate the CI.
+#' The CI for \code{"w"} is also obtained with a cluster bootstrap that
+#' resamples clusters with replacement.
+#'
+#' Note that \code{"w"} gives each cluster the same total weight, so it
+#' estimates the ERR and EDR of a typical cluster rather than of a typical
+#' test. When the number of significant results in a cluster depends on its
+#' power (e.g., high-powered articles report more significant results),
+#' \code{"w"} underestimates the test-level ERR and EDR.
 #' @param data an object created with [zcurve_data()] function.
 #' @param method the method to be used for fitting. Possible options are
-#' down weighting \code{"w"} and nested bootstrap \code{"b"}. 
+#' down weighting \code{"w"} and cluster bootstrap \code{"b"}. 
 #' Defaults to \code{"w"}.
 #' @param bootstrap the number of bootstraps for estimating CI. To skip
 #' bootstrap specify \code{FALSE}.
@@ -35,7 +43,7 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
   if(!method %in% c("w", "b"))
     stop("Wrong method, select a supported option.")
   if(method == "b" && is.logical(bootstrap) && !bootstrap)
-    stop("The nested boostrap method requires bootstrap.")
+    stop("The cluster bootstrap method requires bootstrap.")
   
   # set bootstrap
   if(!is.numeric(bootstrap)){
@@ -57,6 +65,9 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
   # create control
   control <- .zcurve_EM.control(control)
   
+  # significance cutoff for counting significant results (independent of the fitting range)
+  z_sig <- stats::qnorm(control$sig_level/2, lower.tail = FALSE)
+  
   ### prepare data
   if(nrow(data$precise) != 0){
     z    <- .p_to_z(data$precise$p)
@@ -68,7 +79,7 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
   
   # get the total number of observations before removal for fitting purposes
   N_obs <- length(data$precise$p)
-  N_sig <- length(data$precise$p[.p_to_z(data$precise$p) >= control$a])
+  N_sig <- length(data$precise$p[.p_to_z(data$precise$p) >= z_sig])
   
   if(nrow(data$censored) != 0){
     
@@ -78,7 +89,7 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
     
     # get the total number of observations before removal for fitting purposes (using the collected bounds before accounting for rounding)
     N_obs <- N_obs + length(.p_to_z(data$censored$p.rep))
-    N_sig <- N_sig + length(.p_to_z(data$censored$p.rep)[.p_to_z(data$censored$p.rep) >= control$a])
+    N_sig <- N_sig + length(.p_to_z(data$censored$p.rep)[.p_to_z(data$censored$p.rep) >= z_sig])
     
     # remove non-significant censored p-values
     if(any(lb < control$a)){
@@ -90,7 +101,8 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
     
     # move too significant censored p-values among precise p-values          
     if(length(lb) > 0 && any(lb >= control$b)){
-      object$data <- c(object$data, lb[lb >= control$b])
+      z    <- c(z,    lb[lb >= control$b])
+      z_id <- c(z_id, b_id[lb >= control$b])
       b_id <- b_id[lb < control$b]
       ub   <- ub[lb < control$b]
       lb   <- lb[lb < control$b]
@@ -211,12 +223,12 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
 
   if(parallel){
     
-    cores        <- zcurve.get_option("max_cores")
-    core_load    <- split(1:bootstrap, rep(1:cores, length.out = bootstrap))
-    core_load    <- sapply(core_load, length)
+    core_load    <- .bootstrap_core_load(bootstrap)
+    cores        <- length(core_load)
     initial_seed <- sample(.Machine$integer.max, 1)
-    
+
     cl <- parallel::makePSOCKcluster(cores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
     parallel::clusterEvalQ(cl, {library("zcurve")})
     parallel::clusterExport(cl, c("fit_start", "control", "data_index", "core_load", "initial_seed"), envir = environment())
     fit <- parallel::parLapplyLB(cl, 1:cores, function(i){
@@ -244,7 +256,6 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
       
       return(fit)
     })
-    parallel::stopCluster(cl)
     fit <- do.call(c, fit)
     
   }else{
@@ -277,14 +288,27 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
     "iter"       = do.call(c, lapply(fit, function(f) f[["iter"]]))
   )
   
+  # point estimate from all results
+  fit_all <- .zcurve_EMc_fit_fast_RCpp(x          = z,
+                                       lb         = lb,
+                                       ub         = ub,
+                                       mu         = fit_start$mu[which.max(fit_start$Q),],
+                                       sigma      = control$sigma,
+                                       theta      = fit_start$weights[which.max(fit_start$Q),],
+                                       a          = control$a,
+                                       b          = control$b,
+                                       sig_level  = control$sig_level,
+                                       max_iter   = control$max_iter,
+                                       criterion  = control$criterion)
+
   return(
     list(
       fit =      list(
-        "mu"         = apply(fit_boot[["mu"]], 2, mean),
-        "weights"    = apply(fit_boot[["weights"]], 2, mean),
-        "prop_high"  = mean(fit_boot[["prop_high"]]),
-        "Q"          = mean(fit_boot[["Q"]]),
-        "iter"       = mean(fit_boot[["iter"]]),
+        "mu"         = fit_all$mu,
+        "weights"    = fit_all$weights,
+        "prop_high"  = fit_all$prop_high,
+        "Q"          = fit_all$Q,
+        "iter"       = fit_all$iter,
         "iter_start" = fit_start$iter[which.max(fit_start$Q)]
       ),
       fit_boot = fit_boot
@@ -355,53 +379,59 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
   x_w <- id_weights$w[match(z_id, id_weights$id)]
   b_w <- id_weights$w[match(b_id, id_weights$id)]
   
-  indx <- c(
-    if(length(z)  > 0) 1:length(z),
-    if(length(lb) > 0) (-length(lb)):-1
-  )
-  
-  fit_boot <- .zcurve_EMc_boot_fast_w_RCpp(x         = z,
-                                           x_w       = x_w,
-                                           lb        = lb,
-                                           ub        = ub,
-                                           b_w       = b_w,
-                                           indx      = indx,
-                                           mu        = fit$mu,
-                                           sigma     = control$sigma,
-                                           theta     = fit$weights,
-                                           a         = control$a,
-                                           b         = control$b,
-                                           sig_level = control$sig_level,
-                                           bootstrap = bootstrap,
-                                           prop_boot = control$bootstrap_prop,
-                                           criterion = control$criterion_boot,
-                                           max_iter  = control$max_iter_boot)
+  # rows of each article's precise and censored results
+  z_rows <- split(seq_along(z),  factor(z_id, levels = id_weights$id))
+  b_rows <- split(seq_along(lb), factor(b_id, levels = id_weights$id))
+
+  # cluster bootstrap: resample articles with replacement, keeping all of their
+  # results and their original weights
+  fit_boot <- list()
+  for(i in 1:bootstrap){
+
+    boot_id <- sample(id_weights$id, replace = TRUE)
+    z_i     <- unlist(z_rows[boot_id], use.names = FALSE)
+    b_i     <- unlist(b_rows[boot_id], use.names = FALSE)
+
+    fit_boot[[i]] <- .zcurve_EMc_fit_fast_w_RCpp(x         = z[z_i],
+                                                 x_w       = x_w[z_i],
+                                                 lb        = lb[b_i],
+                                                 ub        = ub[b_i],
+                                                 b_w       = b_w[b_i],
+                                                 mu        = fit$mu,
+                                                 sigma     = control$sigma,
+                                                 theta     = fit$weights,
+                                                 a         = control$a,
+                                                 b         = control$b,
+                                                 sig_level = control$sig_level,
+                                                 max_iter  = control$max_iter_boot,
+                                                 criterion = control$criterion_boot)
+  }
+
   return(
     list(
-      "mu"        = fit_boot$mu,
-      "weights"   = fit_boot$weights,
-      "Q"         = fit_boot$Q,
-      "prop_high" = fit_boot$prop_high,
-      "iter"      = fit_boot$iter
+      "mu"        = do.call(rbind, lapply(fit_boot, function(f) f[["mu"]])),
+      "weights"   = do.call(rbind, lapply(fit_boot, function(f) f[["weights"]])),
+      "Q"         = do.call(c,     lapply(fit_boot, function(f) f[["Q"]])),
+      "prop_high" = do.call(c,     lapply(fit_boot, function(f) f[["prop_high"]])),
+      "iter"      = do.call(c,     lapply(fit_boot, function(f) f[["iter"]]))
     )
   )
   
 }
 .zcurve_EM_w_boot.par <- function(z, z_id, lb, ub, b_id, control, fit, bootstrap){
   
-  cores        <- zcurve.get_option("max_cores")
-  core_load    <- split(1:bootstrap, rep(1:cores, length.out = bootstrap))
-  core_load    <- sapply(core_load, length)
+  core_load    <- .bootstrap_core_load(bootstrap)
+  cores        <- length(core_load)
   initial_seed <- sample(.Machine$integer.max, 1)
-  
+
   cl <- parallel::makePSOCKcluster(cores)
+  on.exit(parallel::stopCluster(cl), add = TRUE)
   parallel::clusterEvalQ(cl, {library("zcurve")})
   parallel::clusterExport(cl, c("z", "z_id", "lb", "ub", "b_id", "control", "fit", "bootstrap", "core_load", "initial_seed"), envir = environment())
   fit_boot <- parallel::parLapplyLB(cl, 1:cores, function(i){
     set.seed(initial_seed + i)
     return(.zcurve_EM_w_boot(z, z_id, lb, ub, b_id, control, fit, core_load[i]))
   })
-  parallel::stopCluster(cl)
   
   
   return(
@@ -417,24 +447,11 @@ zcurve_clustered <- function(data, method = "b", bootstrap = 1000, parallel = FA
 
 .boot_id <- function(data){
   
+  # resample articles with replacement, keeping all results of each drawn article
   unique_id <- unique(data$id)
-  
-  if(length(unique_id) == nrow(data)){
-    return(data)
-  }
-  
-  boot_out <- list()
-  for(id in unique_id){
-    
-    temp_data <- data[data$id == id,]
-    
-    if(nrow(temp_data) == 1){
-      boot_out[[id]] <- temp_data
-    }else{
-      boot_out[[id]] <- temp_data[sample(nrow(temp_data), 1),]
-    }
-  }
-  boot_out <- do.call(rbind, boot_out)
-  
-  return(boot_out)
+  boot_id   <- unique_id[sample.int(length(unique_id), replace = TRUE)]
+
+  rows <- unlist(lapply(boot_id, function(id) which(data$id == id)))
+
+  return(data[rows, ])
 }
